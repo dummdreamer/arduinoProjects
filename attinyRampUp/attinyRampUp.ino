@@ -21,24 +21,39 @@
 
   http://www.arduino.cc/en/Tutorial/Blink
 */
-  int startDelay = 2000;
-  int incStep = 5;
-  int dutyCycle = 50;
+#include <SoftwareSerial.h>;
+
+#define RX    3   
+#define TX    4 
+
+//SoftwareSerial Serial(RX, TX);
+
+  float frequency_kHz = 30.0;
+  float rampUp_s = 5.0;
+  float duty_pct = 0.1;
+  
+  float delayON_us = 1000*(duty_pct)/frequency_kHz;
+  float delayOFF_us = 1000*((1-duty_pct))/frequency_kHz;
+  float incStep_us = (delayOFF_us*delayOFF_us)/(rampUp_s*1000000.0);
 
 // the setup function runs once when you press reset or power the board
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(0, OUTPUT);
+  digitalWrite(0, HIGH); 
+  delayMicroseconds(delayON_us);
+  //Serial.println(delayON_us);
   }
 
 // the loop function runs over and over again forever
 void loop() {
-  
-  digitalWrite(0, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(startDelay/dutyCycle*dutyCycle);    // wait for a second
-  if (dutyCycle < 100) {
-    digitalWrite(0, LOW);    // turn the LED off by making the voltage LOW
-    delay((startDelay/(dutyCycle/100))*(100-dutyCycle)/100);                       // wait for a second
-    dutyCycle = dutyCycle + incStep;
+  if (delayOFF_us > 0) {
+    digitalWrite(0, LOW); 
+    delayMicroseconds(delayOFF_us);   
+    digitalWrite(0, HIGH);
+    delayMicroseconds(delayON_us);
+    delayOFF_us = delayOFF_us - incStep_us;
+    delayON_us = delayON_us + incStep_us;
+    //Serial.print(delayON_us);
   }
 }

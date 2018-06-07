@@ -21,24 +21,25 @@
 
   http://www.arduino.cc/en/Tutorial/Blink
 */
-  int startDelay = 2000;
-  int incStep = 5;
-  int dutyCycle = 50;
+  int startDelay = 1;
+  float incStep = 0.00005;
+  float dutyCycle = 0.1;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(0, OUTPUT);
+  digitalWrite(0, HIGH);    // turn the LED off by making the voltage LOW
+  delay(startDelay);
   }
 
 // the loop function runs over and over again forever
 void loop() {
-  
-  digitalWrite(0, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(startDelay/dutyCycle*dutyCycle);    // wait for a second
-  if (dutyCycle < 100) {
+  if (dutyCycle < 1) {
     digitalWrite(0, LOW);    // turn the LED off by making the voltage LOW
-    delay((startDelay/(dutyCycle/100))*(100-dutyCycle)/100);                       // wait for a second
+    delay((startDelay/dutyCycle)*((1-dutyCycle)));   
+    digitalWrite(0, HIGH);   // turn the LED on (HIGH is the voltage level)
+    delay(startDelay);    // wait for a second
     dutyCycle = dutyCycle + incStep;
   }
 }
